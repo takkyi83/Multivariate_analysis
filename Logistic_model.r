@@ -1,44 +1,47 @@
 ```R
-### Q:(a) 利用主成分分析定義基於5種食物的物價指標
-### Q:(b) 由物價指標指出物價最高與最低的城市。若改用相關矩陣萃取主成分則物價最高與最低的城市是否改變?
-### 哪一種型態的資料較適宜用來計算物價指標?  為什麼?
-### Q:(c) 利用主成分計分做散佈圖並將城市分群，群與群間有何不同?
-data = read.csv('C:\\Users\\Sherry\\Google Drive\\OneDrive\\TMU\\_多變量\\FOODP.csv',header = T, sep=",")
-head(data)
+# 解釋寫法
+# OR = exp(2.403)=11.06 
+  #寫法1:長度為x+1單位時，吃f的可能性(非i),是x cm 的exp(2.403)倍
+  #寫法2:當長度上升一單位，吃F(而非I)的可能性，會上升(OR-1)*100%
 
-#計算平均
-v<-c(0,0,0,0,0)
-i = 1
-for (n in data){
-  v[[i]] = mean(data[,i])
-  i = i + 1
-}
-v
-#均值化
-data = read.csv('C:\\Users\\Sherry\\Google Drive\\OneDrive\\TMU\\_多變量\\FOODP_MeanCorrected.csv',header = T, sep=",")
-head(data)
-data_cor=cor(data[,2:6]);data_cor # 相關係數矩陣
-data_cov=cov(data[,2:6]);data_cov # 共變異數矩陣
-# 主成分分析，sd^2 = eigen value = lamda ^2 
-data_pca=princomp(x=data[,2:6],cor=F);data_pca 
-summary(data_pca)
-# Loadings
-unclass(data_pca$loadings)
-#主成分計分，即特徵向量
-head(data_pca$scores)
-biplot(data_pca)
-#### ANS(b):畫圖後顯示Buffalo物價最高，Anchorage物價最低
+##----第一題: 用baseline model分析alligator資料------------------------##
+setwd('C:\\Users\\Sherry\\Google Drive\\OneDrive\\TMU\\_多變量')
+install.packages('VGAM')
+library('VGAM')
+alli <- read.table("Alligator food choice.txt",header=FALSE)
+names(alli) <- c('Length','Food');alli
+# 把"O"當ref group
+alli$Food <- relevel(alli$Food,ref="O")
+vglm(formula = Food ~ Length, family=multinomial, data=alli)
 
-### ANS(a):五個主成分 Comp.1變異數為216.67, 佔總變異52%
-### Comp.1 = -0.453*Bread -0.715*Hamburger -0.339*Butter -0.220*Apples -0.347*Tomatoes
-### 由上式權重可知Hamburger的價格影響Comp.1最大
+# 另一種寫法
+library(nnet)
+fit2 <- multinom(Food ~ Length, data=alli)
+summary(fit2)
 
-#利用相關係數進行主成分分析
-data_pca_r=princomp(x=data[,2:6], cor=T);data_pca_r
-summary(data_pca_r,loading=T)
-#主成分計分
-head(data_pca_r$scores)
-biplot(data_pca)
-#### ANS(b):改用相關矩陣萃取主成分，畫圖後仍然顯示Buffalo物價最高，Anchorage物價最低
-#### ANS(c): 由圖形可大致看出城市依物價分為兩群
+# ?怎麼檢定B1 B2是否為0?
+
+## 計算log Odds:
+  # log(吃魚/吃其他) = 1.61 - 0.11x
+  # log(吃無瘠椎/吃其他) = 5.67 - 2.46x
+  # log (吃魚/吃無瘠椎) = -4.06 + 2.35x
+## 解釋(兩種寫法):
+  # 1.鱷魚長度為x+1單位時，吃魚的可能性(非無瘠椎)，是x公尺的exp(2.35)=10.48倍
+  #? 2.當長度上升一單位，吃魚(而非無瘠椎)的可能性，會上升(OR-1)*100% 
+
+##--第二題: political: 用accumulative model解釋beta----------------------## 
+pol <- read.table("political ideology.txt",header=TRUE);pol
+# x=1 Democrats    x=0 Republicans
+# y=ideology
+attach(pol)
+# produce the estimated probabilities for each category for each observation
+fit <- vglm(ideology~party,family=cumulative(parallel=TRUE),weights=count,data=pol);summary(fit) 
+# 參數fitted(模型)->看機率
+fitted(fit)
+
+## 解釋 
+  # H0假設民主跟共和黨同樣liberal
+  # 此OR的95%CI是exp(0.975+-1.96*0.129) =(2.1,3,4)
+  # CI不包含1 拒絕虛無假設
+  # OR =exp(0.975)=2.65 民主黨傾向liberal的勝算是共和黨的2.65倍
 ```
