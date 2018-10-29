@@ -1,6 +1,11 @@
 #```R
 # install.packages("devtools")
-prettycode::prettycode()
+#prettycode::prettycode()
+
+```R
+var s = "R 語法高亮";
+alert(s);
+
 
 getwd()
 setwd
@@ -111,5 +116,5 @@ fviz_cluster(kmedoid.cluster,       # 分群結果
              data = X,           # 資料
              geom = c("point"),     # 點 (point)
              frame.type = "norm")   # 框架型態
-#```
+```
 
