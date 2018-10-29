@@ -1,6 +1,6 @@
 #```R
 # install.packages("devtools")
-devtools::install_github("romainfrancois/highlight")
+prettycode::prettycode()
 
 getwd()
 setwd
