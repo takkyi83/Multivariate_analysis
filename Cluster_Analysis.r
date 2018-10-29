@@ -1,12 +1,5 @@
-#```R
-# install.packages("devtools")
-#prettycode::prettycode()
 
 ```R
-var s = "R 語法高亮";
-alert(s);
-
-
 getwd()
 setwd
 library(xlsx)
