@@ -1,4 +1,7 @@
-```R
+#```R
+# install.packages("devtools")
+devtools::install_github("romainfrancois/highlight")
+
 getwd()
 setwd
 library(xlsx)
@@ -108,5 +111,5 @@ fviz_cluster(kmedoid.cluster,       # 分群結果
              data = X,           # 資料
              geom = c("point"),     # 點 (point)
              frame.type = "norm")   # 框架型態
-```
+#```
 
